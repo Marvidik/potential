@@ -1,11 +1,14 @@
 # views.py
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes,parser_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from .models import UserInfo
+from .models import UserInfo,Consultation,Notification
+from .serializers import ConsultationSerializer,NotificationSerializer,UserUpdateSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
 
 @api_view(['POST'])
 def register(request):
@@ -86,3 +89,44 @@ def login(request):
             "address": user_info.address if user_info else ""
         }
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])  # Support image upload
+def update_user_account(request):
+    user = request.user
+    serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Account updated successfully", "user": serializer.data}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_consultation(request):
+    data = request.data.copy()
+    data['user'] = request.user.id  # Attach logged-in user
+
+    serializer = ConsultationSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response({"message": "Consultation created successfully", "consultation": serializer.data}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_consultations(request):
+    consultations = Consultation.objects.filter(user=request.user)
+    serializer = ConsultationSerializer(consultations, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_notifications(request):
+    notifications = Notification.objects.all().order_by('-date')
+    serializer = NotificationSerializer(notifications, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
