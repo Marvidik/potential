@@ -137,3 +137,26 @@ def get_notifications(request):
 def get_user_dashboard(request):
     serializer = UserDashboardSerializer(request.user, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+@api_view(['DELETE'])
+def delete_notification(request, id):
+    try:
+        notification = Notification.objects.get(id=id)
+        notification.delete()
+        return Response({"message": "Notification deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except Notification.DoesNotExist:
+        return Response({"error": "Notification not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+def delete_consultation(request, id):
+    try:
+        consultation = Consultation.objects.get(id=id)
+        consultation.delete()
+        return Response({"message": "Consultation deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except Consultation.DoesNotExist:
+        return Response({"error": "Consultation not found"}, status=status.HTTP_404_NOT_FOUND)

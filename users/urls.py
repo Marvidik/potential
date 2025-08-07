@@ -13,4 +13,7 @@ urlpatterns = [
     path('account/update/', update_user_account, name='update-account'),
 
     path('dashboard/', get_user_dashboard, name='user-dashboard'),
+
+    path('delete-notification/<int:id>/', delete_notification, name='delete-notification'),
+    path('delete-consultation/<int:id>/', delete_consultation, name='delete-consultation'),
 ]
