@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register, login,create_consultation,get_user_consultations,get_notifications,update_user_account
+from .views import *
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -11,4 +11,6 @@ urlpatterns = [
     path('notifications/', get_notifications, name='get-notifications'),
 
     path('account/update/', update_user_account, name='update-account'),
+
+    path('dashboard/', get_user_dashboard, name='user-dashboard'),
 ]

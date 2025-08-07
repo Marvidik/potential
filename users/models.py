@@ -5,7 +5,7 @@ from .utils import generate_unique_visitor_id
 # Create your models here.
 
 class UserInfo(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE,related_name='userinfo')
     address= models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15)
     display_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
@@ -24,6 +24,7 @@ class Consultation(models.Model):
     visit_time = models.TimeField()
     reason_for_visit = models.TextField()
     status=models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.visitor_id:  # Only generate if it's empty
@@ -44,3 +45,13 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+class LabResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lab_results')
+    record_type = models.CharField(max_length=100)  # e.g., "Lab Test", "X-Ray"
+    file = models.FileField(upload_to='lab_results/')  # store uploaded files
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.record_type} - {self.user.email}"

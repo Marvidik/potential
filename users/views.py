@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from .models import UserInfo,Consultation,Notification
-from .serializers import ConsultationSerializer,NotificationSerializer,UserUpdateSerializer
+from .serializers import ConsultationSerializer,NotificationSerializer,UserUpdateSerializer,UserDashboardSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 
 @api_view(['POST'])
@@ -129,4 +129,11 @@ def get_user_consultations(request):
 def get_notifications(request):
     notifications = Notification.objects.all().order_by('-date')
     serializer = NotificationSerializer(notifications, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_dashboard(request):
+    serializer = UserDashboardSerializer(request.user, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
