@@ -2,7 +2,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view,permission_classes,parser_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -11,6 +11,7 @@ from .serializers import ConsultationSerializer,NotificationSerializer,UserUpdat
 from rest_framework.parsers import MultiPartParser, FormParser
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register(request):
     email = request.data.get('email')
     password = request.data.get('password')
@@ -59,7 +60,9 @@ def register(request):
     }, status=status.HTTP_201_CREATED)
 
 
+
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login(request):
     email = request.data.get('email')
     password = request.data.get('password')
