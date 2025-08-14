@@ -150,7 +150,7 @@ def delete_notification(request, id):
     try:
         notification = Notification.objects.get(id=id)
         notification.delete()
-        return Response({"message": "Notification deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Notification deleted successfully"}, status=status.HTTP_200_OK)
     except Notification.DoesNotExist:
         return Response({"error": "Notification not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -160,6 +160,6 @@ def delete_consultation(request, id):
     try:
         consultation = Consultation.objects.get(id=id)
         consultation.delete()
-        return Response({"message": "Consultation deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Consultation deleted successfully"}, status=status.HTTP_200_OK)
     except Consultation.DoesNotExist:
         return Response({"error": "Consultation not found"}, status=status.HTTP_404_NOT_FOUND)
